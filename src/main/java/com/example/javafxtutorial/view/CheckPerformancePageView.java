@@ -287,7 +287,7 @@ public class CheckPerformancePageView {
         return cartItem;
     }
 
-    private HBox createEmpPerformanceItem(Employee e) {
+    public HBox createEmpPerformanceItem(Employee e) {
         HBox cartItem = new HBox();
         cartItem.setSpacing(10);
         cartItem.setAlignment(Pos.CENTER_LEFT); // Align the cart item content to the left
@@ -384,7 +384,7 @@ public class CheckPerformancePageView {
         return cartItem;
     }
 
-    private int getNumberOfBillsForEmployee(Employee e, LocalDate l2, LocalDate l3){
+    public int getNumberOfBillsForEmployee(Employee e, LocalDate l2, LocalDate l3){
         int numberOfBills = 0;
 
 
@@ -447,7 +447,7 @@ public class CheckPerformancePageView {
         return numberOfBooksSold;
     }
 
-    private double getMoneyMadeForEmployee(Employee e, LocalDate l2, LocalDate l3){
+    public double getMoneyMadeForEmployee(Employee e, LocalDate l2, LocalDate l3){
         double moneyMade = 0;
 
         for (Order o: orderController.getOrders()){
@@ -481,7 +481,7 @@ public class CheckPerformancePageView {
         return (l1.isEqual(l2) || l1.isAfter(l2)) && (l1.isEqual(l3) || l1.isBefore(l3));
     }
 
-    private void removeAllEmployees(VBox cartPage){
+    public void removeAllEmployees(VBox cartPage){
 
         ArrayList<Node> nodesToBeRemoved = new ArrayList<>();
 

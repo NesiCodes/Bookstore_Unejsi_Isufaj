@@ -135,7 +135,7 @@ public class PrintWindow extends Application{
         primaryStage.setScene(new Scene(vBox, 700, 600));
     }
 
-    private void writeInformationToFile(String filePath, VBox vBox) {
+    public void writeInformationToFile(String filePath, VBox vBox) {
         try (FileWriter writer = new FileWriter(filePath)) {
             // Gather information from vBox and write it to the file (ca kemi te window vendoset dhe te file)
             for (Node node : vBox.getChildren()) {
