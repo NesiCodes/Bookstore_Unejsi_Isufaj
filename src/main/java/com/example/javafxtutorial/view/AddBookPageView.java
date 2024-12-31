@@ -111,6 +111,8 @@ public class AddBookPageView {
 
         Button saveButton = new Button("Add Book");
         saveButton.setBackground(Background.fill(Color.rgb(9,121,121)));
+        saveButton.setId("saveButton");
+
         saveButton.setTextFill(Color.WHITE);
         saveButton.setFont(Font.font("Berlin Sans FB", 16));
         saveButton.setOnAction(actionEvent -> {

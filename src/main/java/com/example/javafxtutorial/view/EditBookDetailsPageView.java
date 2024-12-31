@@ -244,14 +244,26 @@ public class EditBookDetailsPageView {
         cartItem.setBorder(border);
         return cartItem;
     }
+    protected int parseQuantity(String quantityStr) throws InvalidQuantityException {
+        if (quantityStr == null || quantityStr.trim().isEmpty()) {
+            throw new InvalidQuantityException("Quantity cannot be null or empty");
+        }
 
-    private int parseQuantity(String quantityStr) throws InvalidQuantityException {
         try {
-            return Integer.parseInt(quantityStr);
+            // Trim whitespace before parsing
+            int quantity = Integer.parseInt(quantityStr.trim());
+            if (quantity < 0) {
+                throw new InvalidQuantityException("Quantity cannot be negative");
+            }
+            return quantity;
         } catch (NumberFormatException e) {
-            throw new InvalidQuantityException("Invalid quantity: " + quantityStr);
+            throw new InvalidQuantityException("Invalid quantity: " + quantityStr, e);
         }
     }
+
+
+
+
 
     private Region createRegion() {
         Region region = new Region();

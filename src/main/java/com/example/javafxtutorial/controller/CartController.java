@@ -16,6 +16,8 @@ public class CartController {
 
     private double totalPrice;
 
+    private boolean isTestMode = false;
+
     public CartController(){
         cartItems = new ArrayList<>();
     }
@@ -24,6 +26,10 @@ public class CartController {
         this.cartItems = cartItems;
         this.totalQuantity = totalQuantity;
         this.totalPrice = totalPrice;
+    }
+
+    public void setTestMode(boolean isTestMode) {
+        this.isTestMode = isTestMode;
     }
 
     public ArrayList<CartItem> getCartItems() {
@@ -51,47 +57,60 @@ public class CartController {
         this.totalPrice = totalPrice;
     }
 
-    public void addCartItem(CartItem cartItem){
-        //check if cart item already exists
-        for(CartItem c: cartItems){
-            if(c.getBook().getImagePath().equals(cartItem.getBook().getImagePath())){
-                //item exists so we just increment quantity
-                if(c.getBook().getQuantity()> c.getQuantity()){
-                c.setQuantity(c.getQuantity() + 1);
-                c.setSubtotal(c.getQuantity() * c.getBook().getPrice());
-                calculateCartTotalPrice();
-                calculateCartTotalQuantity();
-                Alert alert= new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("The quantity increased");
-                alert.setHeaderText(null);
-                alert.setContentText(c.getBook().getName()+" quantity has been increased");
-                alert.show();
-                    PauseTransition pause = new PauseTransition(Duration.seconds(1));
-                    pause.setOnFinished(event -> alert.close());
-                    pause.play();}
-                else{
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("No More Books");
-                    alert.setHeaderText(null);
-                    alert.setContentText("You cannot buy more than "+ c.getBook().getQuantity()+" for " + c.getBook().getName() );
+    public void addCartItem(CartItem cartItem) {
+        if (cartItem == null) {
+            throw new IllegalArgumentException("CartItem cannot be null");
+        }
+        if (cartItem.getBook() == null) {
+            throw new IllegalArgumentException("Book in CartItem cannot be null");
+        }
+        if (cartItem.getQuantity() <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero");
+        }
+        if (cartItem.getQuantity() > cartItem.getBook().getQuantity()) {
+            throw new IllegalArgumentException("Quantity exceeds stock availability");
+        }
 
-                    alert.show();
-                    PauseTransition pause = new PauseTransition(Duration.seconds(1));
-                    pause.setOnFinished(event -> alert.close());
-                    pause.play();
+        // Check if the item already exists in the cart
+        for (CartItem c : cartItems) {
+            if (c.getBook().getImagePath().equals(cartItem.getBook().getImagePath())) {
+                if (c.getBook().getQuantity() > c.getQuantity()) {
+                    c.setQuantity(c.getQuantity() + 1);
+                    c.setSubtotal(c.getQuantity() * c.getBook().getPrice());
+                    calculateCartTotalPrice();
+                    calculateCartTotalQuantity();
+                    handleAlert("The quantity increased", c.getBook().getName() + " quantity has been increased");
+                } //Green (thicker) + Brown (thinner):
+                //The line has been executed and is fully covered, but there are no branches to test on that line.
+
+                else {
+                    handleAlert("No More Books", "You cannot buy more than " + c.getBook().getQuantity() + " for " + c.getBook().getName());
                 }
                 return;
-            }}
+            }
+        }
 
-        //item doesnt exist so we add it to cart
+        // Add new item to the cart
         this.cartItems.add(cartItem);
         calculateCartTotalPrice();
         calculateCartTotalQuantity();
-        Alert alert= new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("The quantity increased");
+        handleAlert("Item Added", cartItem.getBook().getName() + " has been added");
+    }
+
+    protected void handleAlert(String title, String message) {
+        if (!isTestMode) {
+            showAlert(title, message);
+        }
+    }
+
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
         alert.setHeaderText(null);
-        alert.setContentText(cartItem.getBook().getName()+" has been added");
+        alert.setContentText(message);
         alert.show();
+
         PauseTransition pause = new PauseTransition(Duration.seconds(1));
         pause.setOnFinished(event -> alert.close());
         pause.play();
@@ -110,12 +129,12 @@ public class CartController {
         }
     }
 
-    public void calculateCartTotalPrice(){
-        totalPrice = 0;
-        for(CartItem c: cartItems){
-            totalPrice += c.getSubtotal();
-        }
+    public void calculateCartTotalPrice() {
+        this.totalPrice = cartItems.stream()
+                .mapToDouble(CartItem::getSubtotal)
+                .sum();
     }
+
 
     @Override
     public String toString() {
